@@ -1,0 +1,484 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Notebook API",
+        "description": "API для записной книжки",
+        "contact": {
+            "name": "Владимир Пак",
+            "email": "newpack97@gmail.com, vladimirpack@icloud.com"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/v1/register": {
+            "post": {
+                "summary": "Регистрация нового пользователя",
+                "description": "Создает нового пользователя и возвращает его данные",
+                "operationId": "ad77fe138bcb384ad65d167d5c8d1cc0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "fullnamme": {
+                                        "type": "string",
+                                        "example": "Иванов Иван Иванович"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "ivan@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Пользователь успешно зарегистрирован"
+                    },
+                    "422": {
+                        "description": "Некорректные данные"
+                    }
+                }
+            }
+        },
+        "/api/v1/login": {
+            "post": {
+                "summary": "Авторизация пользователя",
+                "description": "Вход для пользователя по email и паролю, возвращает токен",
+                "operationId": "bae68d1c55329ecb6e41f48285840c8f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "vladimir@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "secret"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешная авторизация"
+                    },
+                    "401": {
+                        "description": "Неверный email или пароль",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Wrong email or password"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/logout": {
+            "post": {
+                "summary": "Выход пользователя",
+                "description": "Удаляет текущий токен доступа пользователя",
+                "operationId": "c5cdd87fdbf9d0f95dede875bd023dec",
+                "responses": {
+                    "200": {
+                        "description": "Успешный выход",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Token removed"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/notebooks": {
+            "get": {
+                "summary": "Получить список записей",
+                "operationId": "8e3be1f78a31c76f18953fb888bb8525",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Номер страницы для пагинации",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список записей",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/NotebookResource"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Создать новую запись",
+                "operationId": "e5e710ca8e738147c47b689035ee95b0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreNotebookRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Запись успешно создана",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotebookResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Неверный запрос"
+                    }
+                }
+            }
+        },
+        "/api/v1/notebooks/{id}": {
+            "get": {
+                "summary": "Получить данные записи по ID",
+                "operationId": "66955a5b0d9d4b4c0bafad11da25e72d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID записи",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Данные записи",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotebookResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Запись не найдена"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Обновить данные записи по ID",
+                "operationId": "913c597bad7a49ad3a483220f93f176e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID записи",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateNotebookRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Запись успешно обновлена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotebookResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Запись не найдена"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Удалить запись по ID",
+                "operationId": "4eb08a25d758c2052246c167510714dd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID записи",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Запись удалена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Notebook removed"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Запись не найдена"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "LoginUserRequest": {
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "description": "Email пользователя",
+                        "type": "string",
+                        "format": "email",
+                        "example": "user@example.com"
+                    },
+                    "password": {
+                        "description": "Пароль пользователя",
+                        "type": "string",
+                        "example": "password123"
+                    }
+                },
+                "type": "object"
+            },
+            "StoreNotebookRequest": {
+                "required": [
+                    "fullname",
+                    "phone",
+                    "email"
+                ],
+                "properties": {
+                    "fullname": {
+                        "description": "Полное имя",
+                        "type": "string",
+                        "example": "Иван Иванов Иванович"
+                    },
+                    "company": {
+                        "description": "Компания",
+                        "type": "string",
+                        "example": "ООО Ромашка"
+                    },
+                    "phone": {
+                        "description": "Номер телефона",
+                        "type": "string",
+                        "example": "+1234567890"
+                    },
+                    "email": {
+                        "description": "Email",
+                        "type": "string",
+                        "format": "email",
+                        "example": "ivan@example.com"
+                    },
+                    "birthdate": {
+                        "description": "Дата рождения",
+                        "type": "string",
+                        "format": "date",
+                        "example": "1990-01-01"
+                    },
+                    "photo": {
+                        "description": "Фотография пользователя в формате jpeg, png, jpg, или gif. Размер до 2MB.",
+                        "type": "string",
+                        "format": "binary"
+                    }
+                },
+                "type": "object"
+            },
+            "StoreUserRequest": {
+                "required": [
+                    "name",
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "name": {
+                        "description": "Имя пользователя",
+                        "type": "string",
+                        "example": "Иван Иванов Иванович"
+                    },
+                    "email": {
+                        "description": "Email пользователя",
+                        "type": "string",
+                        "format": "email",
+                        "example": "ivan@example.com"
+                    },
+                    "password": {
+                        "description": "Пароль пользователя",
+                        "type": "string",
+                        "format": "password",
+                        "example": "securepassword123"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateNotebookRequest": {
+                "required": [
+                    "fullname",
+                    "phone",
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "fullname": {
+                        "description": "Полное имя",
+                        "type": "string",
+                        "example": "Иван Иванов Иванович"
+                    },
+                    "company": {
+                        "description": "Название компании (опционально)",
+                        "type": "string",
+                        "example": "ООО Ромашка"
+                    },
+                    "phone": {
+                        "description": "Номер телефона",
+                        "type": "string",
+                        "example": "+1234567890"
+                    },
+                    "email": {
+                        "description": "Email",
+                        "type": "string",
+                        "format": "email",
+                        "example": "ivan@example.com"
+                    },
+                    "birthdate": {
+                        "description": "Дата рождения (опционально)",
+                        "type": "string",
+                        "format": "date",
+                        "example": "1990-01-01"
+                    },
+                    "photo": {
+                        "description": "Фотография (опционально)",
+                        "type": "string",
+                        "format": "binary"
+                    }
+                },
+                "type": "object"
+            },
+            "NotebookResource": {
+                "properties": {
+                    "id": {
+                        "description": "ID записи",
+                        "type": "integer"
+                    },
+                    "fullname": {
+                        "description": "Полное имя",
+                        "type": "string",
+                        "example": "Иван Иванов Иванович"
+                    },
+                    "company": {
+                        "description": "Название компании",
+                        "type": "string",
+                        "example": "ООО Ромашка"
+                    },
+                    "phone": {
+                        "description": "Телефон",
+                        "type": "string",
+                        "example": "+1234567890"
+                    },
+                    "email": {
+                        "description": "Email",
+                        "type": "string",
+                        "format": "email",
+                        "example": "ivan@example.com"
+                    },
+                    "birthdate": {
+                        "description": "Дата рождения",
+                        "type": "string",
+                        "format": "date",
+                        "example": "1990-01-01"
+                    },
+                    "photo": {
+                        "description": "Путь фотографии",
+                        "type": "string",
+                        "example": "/storage/uploads/20230101_123456_photo.jpg"
+                    },
+                    "created": {
+                        "description": "Дата и время создания",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2023-01-01 12:00:00"
+                    },
+                    "updated": {
+                        "description": "Дата и время последнего обновления",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2023-01-02 14:30:00"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    }
+}
